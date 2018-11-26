@@ -1,0 +1,95 @@
+import csv
+
+# I am using a class to work on my assignment while trying to understand how classes and dictionaries work.
+
+class Studentlist:
+
+    # my constructor get the file that we are going to use to retrieve solo representatives and get students in different cohort from a specific country
+    def __init__(self, filename):
+
+        # Creating a dictionary to contain all my information first
+        self.general_student_country_dictionary = {}
+
+        # student representing a country will be stored here for us to know their total number by cohort
+        self.dic_country_representation = {}
+
+        # Creating a dictionary to contain
+
+        # opening my file so I can work with it.
+        with open(filename) as student_list:
+
+            # we first read the entire file so we get the entire text in the file
+            self.all_students = csv.reader(student_list)
+
+            # loop through the file line by line
+            for self.row in self.all_students:
+
+                # checking if the country exist already. If not I add it to my dictionary. Else I would just add the student to that particular country
+                if self.row[1] not in self.general_student_country_dictionary:
+                    self.general_student_country_dictionary[self.row[1]] =[[self.row[0],self.row[2]]]
+
+                    # I want to get the number of students in each cohort. So, I will get a new student as we add a new country to our dictionary
+                    cohort1 = 0
+                    cohort2 = 0
+
+                    if self.row[2] == '1':
+                        cohort1 += 1
+                    else:
+                        cohort2 += 1
+
+                    self.dic_country_representation[self.row[1]] = [cohort1, cohort2]
+
+                else:
+                    self.general_student_country_dictionary[self.row[1]].append([self.row[0], self.row[2]])
+
+                    # Else, we will be incrementing the number of students found if the country is repeated.
+                    cohort1 = self.dic_country_representation[self.row[1]][0]
+                    cohort2 = self.dic_country_representation[self.row[1]][1]
+
+                    if self.row[2] == '1':
+                        cohort1 = int(cohort1 + 1)
+
+                    else:
+                        cohort2 = int( cohort2 + 1)
+
+                    # Here we are changing the values of our cohorts after working on them so the changes reflect in the dictionary
+                    self.dic_country_representation[self.row[1]][0]= cohort1
+                    self.dic_country_representation[self.row[1]][1]= cohort2
+
+        student_list.close()
+
+    def solo_country_representatives(self):
+
+        # solo reps of country are only one in a list so I will values with a list < 2
+        solo_representors = 2
+
+        print('\t \n Countries solo representators \n ')
+
+        for self.country_represented in self.general_student_country_dictionary:
+
+            if len(self.general_student_country_dictionary[self.country_represented]) < solo_representors:
+
+                print(self.country_represented + ":\t" + self.general_student_country_dictionary[self.country_represented][0][0])
+
+
+    def user_entered_country(self, country):
+
+        print("In cohort 1 we have "+ str(self.dic_country_representation.get(country)[0])+ " and "
+              + str(self.dic_country_representation.get(country)[1])+ " in the second cohort")
+
+        #pass
+
+
+
+try:
+    file = 'student_country_data.csv'
+    students_countries = Studentlist(file)
+    students_countries.solo_country_representatives()
+
+    country_user_input = input("\nPlease enter a country for us to give you it's detailed information on students in CS at ALU \n").lower()
+
+    result = students_countries.user_entered_country(country_user_input.capitalize())
+
+
+except:
+    print('This country is not represented in CS at ALU')
